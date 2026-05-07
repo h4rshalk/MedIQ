@@ -1,0 +1,7 @@
+metric,value,benchmark,status
+ROC-AUC,0.61,0.65,Near Benchmark
+Recall (High Risk),47.6,50.0,Near Benchmark
+Precision (High Risk),15.0,20.0,Below Benchmark
+F1 Score,23.1,25.0,Near Benchmark
+Accuracy,65.0,70.0,Below Benchmark
+Optimal Threshold,0.25,0.5,Optimised

@@ -1,0 +1,11 @@
+feature,shap_importance
+change,0.8651091
+utilization_score,0.824153
+num_meds_active,0.47694993
+num_meds_changed,0.47546026
+number_inpatient,0.39469278
+number_outpatient,0.3513148
+number_emergency,0.29342455
+gender,0.25786662
+admission_type_id,0.24273795
+discharge_disposition_id,0.23569097

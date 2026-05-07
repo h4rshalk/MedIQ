@@ -1,0 +1,2 @@
+total_patients,high_risk_patients,readmission_rate_pct,avg_age,avg_time_in_hospital,avg_medications,avg_lab_procedures,model_auc,model_recall,optimal_threshold
+101745,11352,11.16,66.0,4.4,16.0,43.1,0.61,47.6,0.25
