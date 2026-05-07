@@ -1,0 +1,5 @@
+med_change_group,total_patients,readmissions,readmission_rate_pct,avg_stay_days,avg_medications
+3+ Meds Changed,112,16.0,14.29,7.01,23.57
+1 Med Changed,26254,3445.0,13.12,5.07,18.9
+2 Meds Changed,1316,157.0,11.93,6.43,21.85
+No Change,74063,7734.0,10.44,4.12,14.89

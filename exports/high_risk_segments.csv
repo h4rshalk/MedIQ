@@ -1,0 +1,10 @@
+diag_1_category,age,patient_count,readmission_rate,avg_stay,avg_utilization,risk_rank
+Digestive,[20-30),131,18.32,4.09,8.11,1
+Injury,[90-100),268,15.67,4.55,1.63,1
+Other,[20-30),1232,15.5,3.46,5.88,1
+Circulatory,[30-40),344,13.66,3.87,3.41,1
+Genitourinary,[70-80),1356,12.09,4.31,2.78,1
+Musculoskeletal,[70-80),1436,11.42,4.05,1.5,1
+Respiratory,[80-90),2645,11.27,4.89,2.6,1
+Neoplasms,[70-80),1023,11.05,5.66,2.04,1
+Diabetes,[40-50),58,8.62,2.6,1.03,1
