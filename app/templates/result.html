@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedIQ — Risk Assessment Result</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0A0E1A; color: #FFFFFF; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+    .navbar { background: #1A2232; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #F59E0B; }
+    .logo { font-size: 22px; font-weight: 700; color: #F59E0B; }
+    .logo span { color: #FFFFFF; }
+    .nav-sub { font-size: 12px; color: #8B9EC4; }
+
+    .container { max-width: 900px; margin: 30px auto; padding: 0 20px 40px; }
+
+    .risk-card { border-radius: 16px; padding: 30px; text-align: center; margin-bottom: 24px; border: 2px solid; }
+    .risk-emoji { font-size: 56px; margin-bottom: 12px; }
+    .risk-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .risk-prob { font-size: 64px; font-weight: 700; margin: 10px 0; }
+    .risk-sub { font-size: 14px; color: #8B9EC4; line-height: 1.6; }
+
+    .gauge-wrap { margin: 20px 0; }
+    .gauge-track { height: 16px; background: #2A3A54; border-radius: 99px; overflow: hidden; }
+    .gauge-fill { height: 100%; border-radius: 99px; }
+    .gauge-labels { display: flex; justify-content: space-between; font-size: 11px; color: #8B9EC4; margin-top: 6px; }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .card { background: #1A2232; border-radius: 12px; padding: 20px; border: 0.5px solid #2A3A54; }
+    .card-title { font-size: 13px; font-weight: 600; color: #F59E0B; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #2A3A54; }
+
+    .factor-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid #2A3A54; font-size: 13px; line-height: 1.5; }
+    .factor-item:last-child { border-bottom: none; }
+
+    .rec-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid #2A3A54; font-size: 13px; align-items: flex-start; }
+    .rec-item:last-child { border-bottom: none; }
+    .rec-arrow { color: #10B981; flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+
+    .shap-row { margin-bottom: 12px; }
+    .shap-label { display: flex; justify-content: space-between; font-size: 12px; color: #8B9EC4; margin-bottom: 4px; }
+    .shap-track { height: 8px; background: #2A3A54; border-radius: 99px; overflow: hidden; }
+    .shap-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #3B82F6, #F59E0B); }
+
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .summary-item { background: #0A0E1A; border-radius: 8px; padding: 10px 12px; }
+    .summary-label { font-size: 10px; color: #8B9EC4; margin-bottom: 3px; text-transform: uppercase; }
+    .summary-val { font-size: 14px; font-weight: 600; color: #FFFFFF; }
+
+    .btn-row { display: flex; gap: 12px; margin-top: 20px; }
+    .btn { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; border: none; display: block; }
+    .btn-primary { background: linear-gradient(135deg, #F59E0B, #D97706); color: #0A0E1A; }
+    .btn-secondary { background: #1A2232; color: #FFFFFF; border: 1px solid #2A3A54; }
+    .btn:hover { opacity: 0.9; }
+
+    .model-badge { display: inline-flex; align-items: center; gap: 6px; background: #1A2232; border: 0.5px solid #2A3A54; border-radius: 99px; padding: 4px 12px; font-size: 11px; color: #8B9EC4; margin: 4px; }
+    .disclaimer { text-align: center; font-size: 11px; color: #4B5563; margin-top: 16px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div>
+    <div class="logo">Med<span>IQ</span></div>
+    <div class="nav-sub">Hospital Patient Readmission Intelligence</div>
+  </div>
+  <div style="font-size:12px;color:#8B9EC4;">Risk Assessment Result</div>
+</nav>
+
+<div class="container">
+
+  <!-- RISK SCORE CARD -->
+  <div class="risk-card" style="background:#1A2232; border-color:{{ color }};">
+    <div class="risk-emoji">{{ emoji }}</div>
+    <div class="risk-title" style="color:{{ color }};">{{ risk_level }}</div>
+    <div class="risk-prob" style="color:{{ color }};">{{ prob }}%</div>
+    <div class="risk-sub">
+      Probability of readmission within 30 days<br>
+      Model threshold: {{ threshold }}% — patients above this are flagged for follow-up
+    </div>
+
+    <div class="gauge-wrap">
+      <div class="gauge-track">
+        <div class="gauge-fill" style="width:{{ prob }}%; background: linear-gradient(90deg,#10B981,#F59E0B,#EF4444);"></div>
+      </div>
+      <div class="gauge-labels">
+        <span>Low Risk (0%)</span>
+        <span>Threshold ({{ threshold }}%)</span>
+        <span>High Risk (100%)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+
+    <!-- RISK FACTORS -->
+    <div class="card">
+      <div class="card-title">⚠️ Key Risk Factors Detected</div>
+      {% for factor in risk_factors %}
+      <div class="factor-item">{{ factor }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- RECOMMENDATIONS -->
+    <div class="card">
+      <div class="card-title">✅ Clinical Recommendations</div>
+      {% for rec in recommendations %}
+      <div class="rec-item">
+        <span class="rec-arrow">→</span>
+        <span>{{ rec }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- SHAP FEATURE IMPORTANCE -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">🧠 Top Readmission Predictors (SHAP Analysis)</div>
+    <div style="font-size:12px;color:#8B9EC4;margin-bottom:14px;">
+      Most important clinical features driving 30-day readmission risk across 101,745 patients.
+    </div>
+
+    <div class="shap-row">
+      <div class="shap-label"><span>Medication Change (change)</span><span style="color:#F59E0B;">86%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:86%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Hospital Utilization Score</span><span style="color:#F59E0B;">82%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:82%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Active Medications Count</span><span style="color:#F59E0B;">48%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:48%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Medications Changed Count</span><span style="color:#F59E0B;">48%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:48%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Prior Inpatient Visits</span><span style="color:#F59E0B;">39%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:39%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Number of Emergency Visits</span><span style="color:#F59E0B;">28%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:28%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Prior Outpatient Visits</span><span style="color:#F59E0B;">25%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:25%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Insulin Status</span><span style="color:#F59E0B;">18%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:18%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Diabetes Medication</span><span style="color:#F59E0B;">15%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:15%;"></div></div>
+    </div>
+    <div class="shap-row">
+      <div class="shap-label"><span>Number of Diagnoses</span><span style="color:#F59E0B;">12%</span></div>
+      <div class="shap-track"><div class="shap-fill" style="width:12%;"></div></div>
+    </div>
+  </div>
+
+  <!-- PATIENT SUMMARY -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">👤 Patient Input Summary</div>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="summary-label">Age</div>
+        <div class="summary-val">{{ data.age }} years</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Gender</div>
+        <div class="summary-val">{{ data.gender }}</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Days in Hospital</div>
+        <div class="summary-val">{{ data.time_in_hospital }}</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Prior Inpatient</div>
+        <div class="summary-val">{{ data.number_inpatient }} visits</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Insulin</div>
+        <div class="summary-val">{{ data.insulin }}</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Diagnosis</div>
+        <div class="summary-val">{{ data.diag_1_category }}</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Medications</div>
+        <div class="summary-val">{{ data.num_medications }}</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Med Changed</div>
+        <div class="summary-val">{{ data.change }}</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Diagnoses Count</div>
+        <div class="summary-val">{{ data.number_diagnoses }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODEL BADGES -->
+  <div style="text-align:center;margin-bottom:16px;">
+    <span class="model-badge">🤖 XGBoost Classifier</span>
+    <span class="model-badge">📊 ROC-AUC: 0.61</span>
+    <span class="model-badge">🎯 Recall: 47.6%</span>
+    <span class="model-badge">📈 SMOTE Balanced</span>
+    <span class="model-badge">🔬 101,745 Records</span>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="btn-row">
+    <a href="/" class="btn btn-primary">← Assess New Patient</a>
+    <a href="/" class="btn btn-secondary">🏥 Back to MedIQ</a>
+  </div>
+
+  <div class="disclaimer">
+    ⚕️ MedIQ is a clinical decision support tool built for educational and analytical purposes.<br>
+    Results should be interpreted by qualified healthcare professionals. Not a substitute for medical judgment.<br>
+    Built by Harshal Kawane | github.com/harshal-kawane/mediq
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedIQ — Patient Readmission Risk Predictor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0A0E1A; color: #FFFFFF; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar { background: #1A2232; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #F59E0B; }
+    .logo { font-size: 22px; font-weight: 700; color: #F59E0B; letter-spacing: 1px; }
+    .logo span { color: #FFFFFF; }
+    .nav-sub { font-size: 12px; color: #8B9EC4; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 40px 20px 20px; }
+    .hero h1 { font-size: 32px; font-weight: 700; color: #FFFFFF; margin-bottom: 10px; }
+    .hero h1 span { color: #F59E0B; }
+    .hero p { font-size: 14px; color: #8B9EC4; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+
+    /* STATS BAR */
+    .stats-bar { display: flex; justify-content: center; gap: 30px; padding: 20px 40px; flex-wrap: wrap; }
+    .stat { background: #1A2232; border-radius: 10px; padding: 12px 24px; text-align: center; border: 0.5px solid #2A3A54; }
+    .stat-num { font-size: 22px; font-weight: 700; color: #F59E0B; }
+    .stat-label { font-size: 11px; color: #8B9EC4; margin-top: 2px; }
+
+    /* FORM */
+    .form-container { max-width: 900px; margin: 20px auto; padding: 0 20px 40px; }
+    .form-card { background: #1A2232; border-radius: 16px; padding: 30px; border: 0.5px solid #2A3A54; }
+    .form-title { font-size: 16px; font-weight: 600; color: #F59E0B; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2A3A54; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 12px; color: #8B9EC4; font-weight: 500; }
+    .form-group input, .form-group select {
+      background: #0A0E1A; border: 1px solid #2A3A54; border-radius: 8px;
+      color: #FFFFFF; padding: 10px 14px; font-size: 13px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: #F59E0B; }
+    .form-group select option { background: #1A2232; }
+    .section-label { grid-column: 1/-1; font-size: 13px; font-weight: 600; color: #3B82F6; margin-top: 8px; padding-top: 12px; border-top: 1px solid #2A3A54; }
+    .submit-btn {
+      width: 100%; padding: 14px; background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #0A0E1A; font-size: 16px; font-weight: 700; border: none;
+      border-radius: 10px; cursor: pointer; transition: opacity 0.2s; letter-spacing: 0.5px;
+    }
+    .submit-btn:hover { opacity: 0.9; }
+    .disclaimer { text-align: center; font-size: 11px; color: #4B5563; margin-top: 12px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div>
+    <div class="logo">Med<span>IQ</span></div>
+    <div class="nav-sub">Hospital Patient Readmission Intelligence</div>
+  </div>
+  <div style="font-size:12px;color:#8B9EC4;">Powered by XGBoost + SHAP</div>
+</nav>
+
+<div class="hero">
+  <h1>Patient <span>Readmission</span> Risk Predictor</h1>
+  <p>Enter patient clinical details below to get an AI-powered 30-day readmission risk assessment. Built on 101,745 diabetic patient records from 130 US hospitals.</p>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">101,745</div><div class="stat-label">Patient Records</div></div>
+  <div class="stat"><div class="stat-num">23</div><div class="stat-label">Clinical Features</div></div>
+  <div class="stat"><div class="stat-num">0.61</div><div class="stat-label">ROC-AUC Score</div></div>
+  <div class="stat"><div class="stat-num">47.6%</div><div class="stat-label">High-Risk Recall</div></div>
+  <div class="stat"><div class="stat-num">19 yrs</div><div class="stat-label">Data Span</div></div>
+</div>
+
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-title">🏥 Patient Clinical Information</div>
+    <form action="/predict" method="POST">
+      <div class="form-grid">
+
+        <!-- DEMOGRAPHICS -->
+        <div class="section-label">👤 Demographics</div>
+        <div class="form-group">
+          <label>Patient Age</label>
+          <input type="number" name="age" value="65" min="1" max="100" required/>
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select name="gender">
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Race</label>
+          <select name="race">
+            <option value="Caucasian">Caucasian</option>
+            <option value="AfricanAmerican">African American</option>
+            <option value="Hispanic">Hispanic</option>
+            <option value="Asian">Asian</option>
+            <option value="Other">Other</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+        </div>
+
+        <!-- HOSPITAL STAY -->
+        <div class="section-label">🏨 Hospital Stay Details</div>
+        <div class="form-group">
+          <label>Days in Hospital</label>
+          <input type="number" name="time_in_hospital" value="4" min="1" max="14" required/>
+        </div>
+        <div class="form-group">
+          <label>Number of Lab Procedures</label>
+          <input type="number" name="num_lab_procedures" value="43" min="0" max="132" required/>
+        </div>
+        <div class="form-group">
+          <label>Number of Procedures</label>
+          <input type="number" name="num_procedures" value="1" min="0" max="6" required/>
+        </div>
+        <div class="form-group">
+          <label>Number of Medications</label>
+          <input type="number" name="num_medications" value="15" min="1" max="81" required/>
+        </div>
+        <div class="form-group">
+          <label>Number of Diagnoses</label>
+          <input type="number" name="number_diagnoses" value="7" min="1" max="16" required/>
+        </div>
+        <div class="form-group">
+          <label>Primary Diagnosis Category</label>
+          <select name="diag_1_category">
+            <option value="Circulatory">Circulatory</option>
+            <option value="Respiratory">Respiratory</option>
+            <option value="Digestive">Digestive</option>
+            <option value="Diabetes">Diabetes</option>
+            <option value="Injury">Injury</option>
+            <option value="Musculoskeletal">Musculoskeletal</option>
+            <option value="Genitourinary">Genitourinary</option>
+            <option value="Neoplasms">Neoplasms</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Admission Type</label>
+          <select name="admission_type_id">
+            <option value="1">Emergency</option>
+            <option value="2">Urgent</option>
+            <option value="3">Elective</option>
+            <option value="6">NULL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Discharge Disposition</label>
+          <select name="discharge_disposition_id">
+            <option value="1">Discharged to Home</option>
+            <option value="3">Skilled Nursing Facility</option>
+            <option value="6">Home with Health Service</option>
+            <option value="11">Expired</option>
+            <option value="18">Unknown</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Admission Source</label>
+          <select name="admission_source_id">
+            <option value="7">Emergency Room</option>
+            <option value="1">Physician Referral</option>
+            <option value="2">Clinic Referral</option>
+            <option value="4">Transfer from Hospital</option>
+          </select>
+        </div>
+
+        <!-- PRIOR VISITS -->
+        <div class="section-label">📊 Prior Hospital Visits</div>
+        <div class="form-group">
+          <label>Prior Inpatient Visits</label>
+          <input type="number" name="number_inpatient" value="0" min="0" max="21" required/>
+        </div>
+        <div class="form-group">
+          <label>Prior Emergency Visits</label>
+          <input type="number" name="number_emergency" value="0" min="0" max="76" required/>
+        </div>
+        <div class="form-group">
+          <label>Prior Outpatient Visits</label>
+          <input type="number" name="number_outpatient" value="0" min="0" max="42" required/>
+        </div>
+
+        <!-- MEDICATIONS -->
+        <div class="section-label">💊 Medications & Lab Results</div>
+        <div class="form-group">
+          <label>Insulin Status</label>
+          <select name="insulin">
+            <option value="No">No</option>
+            <option value="Steady">Steady</option>
+            <option value="Up">Up (Increased)</option>
+            <option value="Down">Down (Decreased)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Medication Changed During Visit?</label>
+          <select name="change">
+            <option value="No">No Change</option>
+            <option value="Ch">Yes — Changed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>On Diabetes Medication?</label>
+          <select name="diabetesMed">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Number of Meds Changed</label>
+          <input type="number" name="num_meds_changed" value="0" min="0" max="4" required/>
+        </div>
+        <div class="form-group">
+          <label>Number of Active Meds</label>
+          <input type="number" name="num_meds_active" value="5" min="0" max="11" required/>
+        </div>
+        <div class="form-group">
+          <label>Max Glucose Serum Test</label>
+          <select name="max_glu_serum">
+            <option value="None">Not Tested</option>
+            <option value="Norm">Normal</option>
+            <option value=">200">&gt;200</option>
+            <option value=">300">&gt;300</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>A1C Result</label>
+          <select name="A1Cresult">
+            <option value="None">Not Tested</option>
+            <option value="Norm">Normal</option>
+            <option value=">7">&gt;7</option>
+            <option value=">8">&gt;8</option>
+          </select>
+        </div>
+
+      </div>
+      <button type="submit" class="submit-btn">🔍 Predict Readmission Risk</button>
+      <div class="disclaimer">⚕️ For clinical decision support only. Not a substitute for professional medical judgment.</div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
