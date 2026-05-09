@@ -104,7 +104,7 @@ python app/app.py
 
 ## 🌐 Live Demo
 
-🔗 **[Try MedIQ Live →](https://mediq-app.onrender.com)**
+🔗 **[Try MedIQ Live →](https://mediq-1-jjzq.onrender.com)**
 
 ---
 
